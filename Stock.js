@@ -1,4 +1,5 @@
 import React from 'react'
+import { Chart as ChartJS } from 'chart.js/auto'
 import { Line } from 'react-chartjs-2'
 
 class Stock extends React.Component{
@@ -12,13 +13,18 @@ class Stock extends React.Component{
             stockLow: [],
             stockClose: [],
             stockVolume: [],
-            loaded: false
+            presentGraph: []
         }
+        this.handleClickOpen = this.handleClickOpen.bind(this)
+        this.handleClickClose = this.handleClickClose.bind(this)
+        this.handleClickHigh = this.handleClickHigh.bind(this)
+        this.handleClickLow = this.handleClickLow.bind(this)
+        this.handleClickVolume = this.handleClickVolume.bind(this)
     }
 
     componentDidMount() {
         const API_KEY = '3UK02FMBCCXGZ0G3'
-        let symbol = 'IBM'
+        let symbol = 'AMZN'
         let apiCall = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=${symbol}&outputsize=compact&apikey=${API_KEY}`
 
         fetch(apiCall)
@@ -49,33 +55,108 @@ class Stock extends React.Component{
                     stockLow: stockLowFunction,
                     stockClose: stockCloseFunction,
                     stockVolume: stockVolumeFunction,
-                    loaded: true
+                    presentGraph: stockOpenFunction
                 })
                 
             })
     }
     
+    handleClickOpen() {
+        this.setState(prevState => {
+            return {
+                stockOpen: prevState.stockOpen,
+                stockClose: prevState.stockClose,
+                stockHigh: prevState.stockHigh,
+                stockLow: prevState.stockLow,
+                stockVolume: prevState.stockVolume,
+                presentGraph: prevState.stockOpen
+            }
+        })
+    }
+
+    handleClickClose() {
+        this.setState(prevState => {
+            return {
+                stockOpen: prevState.stockOpen,
+                stockClose: prevState.stockClose,
+                stockHigh: prevState.stockHigh,
+                stockLow: prevState.stockLow,
+                stockVolume: prevState.stockVolume,
+                presentGraph: prevState.stockClose
+            }
+        })
+    }
+
+    handleClickHigh() {
+        this.setState(prevState => {
+            return {
+                stockOpen: prevState.stockOpen,
+                stockClose: prevState.stockClose,
+                stockHigh: prevState.stockHigh,
+                stockLow: prevState.stockLow,
+                stockVolume: prevState.stockVolume,
+                presentGraph: prevState.stockHigh
+            }
+        })
+    }
+
+    handleClickLow() {
+        this.setState(prevState => {
+            return {
+                stockOpen: prevState.stockOpen,
+                stockClose: prevState.stockClose,
+                stockHigh: prevState.stockHigh,
+                stockLow: prevState.stockLow,
+                stockVolume: prevState.stockVolume,
+                presentGraph: prevState.stockLow
+            }
+        })
+    }
+
+    handleClickVolume() {
+        this.setState(prevState => {
+            return {
+                stockOpen: prevState.stockOpen,
+                stockClose: prevState.stockClose,
+                stockHigh: prevState.stockHigh,
+                stockLow: prevState.stockLow,
+                stockVolume: prevState.stockVolume,
+                presentGraph: prevState.stockVolume
+            }
+        })
+    }
     render() {
-        const { stockDate, stockOpen, stockHigh,
-            stockLow, stockClose, stockVolume, loaded } = this.state
-        console.log(stockDate)
-        if (!loaded) {
-            return (
-                <div>
-                    <h1>Loading...</h1>
-                </div>
-            )
+        const STATE = {
+            labels: this.state.stockDate,
+            datasets: [
+                {
+                    fill: false,
+                    lineTension: 0.5,
+                    backgroundColor: 'rgba(75,192,192,1)',
+                    borderColor: 'rgba(0,0,0,1)',
+                    borderWidth: 2,
+                    data: this.state.presentGraph
+                }
+            ]
         }
         return (
             <div>
-                <Line 
-                    data={{
-                        datasets: [
-                            {
-                                type: 'line',
-                                data: data
-                            }
-                        ]
+                <button onClick={this.handleClickOpen}>Stock Open Price</button>
+                <button onClick={this.handleClickClose}>Stock Close Price</button>
+                <button onClick={this.handleClickHigh}>Stock High Price</button>
+                <button onClick={this.handleClickLow}>Stock Low Price</button>
+                <button onClick={this.handleClickVolume}>Stocks Volume</button>
+                <Line
+                    data={STATE}
+                    options={{
+                        title: {
+                            display: true,
+                            fontSize: 20
+                        },
+                        legend: {
+                            display: true,
+                            position: 'bottom'
+                        }
                     }}
                 />
             </div>
